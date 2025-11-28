@@ -300,6 +300,13 @@ class ACF_IcoMoon_Field extends acf_field {
     }
 
     /**
+     * Track if scripts have been localized
+     *
+     * @var bool
+     */
+    private static bool $scripts_localized = false;
+
+    /**
      * This action is called in the admin_enqueue_scripts action on the edit screen
      * where your field is created.
      *
@@ -324,17 +331,26 @@ class ACF_IcoMoon_Field extends acf_field {
             true
         );
 
-        // Localize script data
-        wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
-            'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-            'nonce'     => wp_create_nonce( 'acf_icomoon_nonce' ),
-            'spriteUrl' => get_option( 'acf_icomoon_sprite_url', '' ),
-            'icons'     => get_option( 'acf_icomoon_icons', array() ),
-            'strings'   => array(
-                'selectIcon' => __( 'Select Icon', 'acf-icomoon' ),
-                'changeIcon' => __( 'Change Icon', 'acf-icomoon' ),
-            ),
-        ) );
+        // Only localize script data once to avoid duplicate data
+        if ( ! self::$scripts_localized ) {
+            wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
+                'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+                'nonce'     => wp_create_nonce( 'acf_icomoon_nonce' ),
+                'spriteUrl' => get_option( 'acf_icomoon_sprite_url', '' ),
+                'icons'     => get_option( 'acf_icomoon_icons', array() ),
+                'strings'   => array(
+                    'selectIcon'   => __( 'Select Icon', 'acf-icomoon' ),
+                    'changeIcon'   => __( 'Change Icon', 'acf-icomoon' ),
+                    'confirmClear' => __( 'Are you sure you want to remove all icons? This cannot be undone.', 'acf-icomoon' ),
+                    'clearing'     => __( 'Clearing...', 'acf-icomoon' ),
+                    'cleared'      => __( 'Icons cleared successfully.', 'acf-icomoon' ),
+                    'error'        => __( 'An error occurred. Please try again.', 'acf-icomoon' ),
+                    'search'       => __( 'Search icons...', 'acf-icomoon' ),
+                    'noResults'    => __( 'No icons found.', 'acf-icomoon' ),
+                ),
+            ) );
+            self::$scripts_localized = true;
+        }
     }
 }
 

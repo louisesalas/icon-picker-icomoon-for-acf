@@ -4,7 +4,7 @@ Tags: acf, icomoon, icons, svg, advanced custom fields
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,17 @@ if ( $icon_name ) {
 ```
 
 == Changelog ==
+
+= 1.0.1 =
+* Security: Added `wp_unslash()` for proper nonce verification
+* Security: Added input sanitization for XPath queries to prevent injection
+* Security: Improved file upload validation with MIME type checking
+* Improved: Added error handling for file write operations
+* Improved: Use `wp_delete_file()` for safer file deletion
+* Improved: Added explicit autoload parameters for options
+* Improved: Fixed duplicate script localization on admin pages
+* Added: Uninstall hook for complete cleanup on plugin removal
+* Added: Multisite support for uninstall cleanup
 
 = 1.0.0 =
 * Initial release

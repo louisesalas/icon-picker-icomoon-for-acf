@@ -3,7 +3,7 @@
  * Plugin Name: ACF IcoMoon Integration
  * Plugin URI: https://example.com/acf-icomoon-integration
  * Description: Adds IcoMoon icon picker support for Advanced Custom Fields. Upload your IcoMoon selection.json or SVG sprite and use icons in ACF fields.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Louise Salas
  * Author URI: https://github.com/louisesalas
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'ACF_ICOMOON_VERSION', '1.0.0' );
+define( 'ACF_ICOMOON_VERSION', '1.0.1' );
 define( 'ACF_ICOMOON_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACF_ICOMOON_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACF_ICOMOON_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -68,6 +68,55 @@ function acf_icomoon_admin_notice_missing_acf(): void {
 
     printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 }
+
+/**
+ * Plugin activation handler
+ * 
+ * This function is registered as the activation hook and must work
+ * even when ACF is not installed to prevent activation without ACF.
+ *
+ * @return void
+ */
+function acf_icomoon_activate(): void {
+    // Check if ACF is active before activating
+    if ( ! acf_icomoon_is_acf_active() ) {
+        deactivate_plugins( ACF_ICOMOON_PLUGIN_BASENAME );
+        wp_die(
+            esc_html__( 'This plugin requires Advanced Custom Fields (ACF) to be installed and activated.', 'acf-icomoon' ),
+            esc_html__( 'Plugin Activation Error', 'acf-icomoon' ),
+            array( 'back_link' => true )
+        );
+    }
+
+    // Set default options with autoload enabled for frequently accessed options
+    if ( false === get_option( 'acf_icomoon_icons' ) ) {
+        add_option( 'acf_icomoon_icons', array(), '', 'yes' );
+    }
+    if ( false === get_option( 'acf_icomoon_sprite_url' ) ) {
+        add_option( 'acf_icomoon_sprite_url', '', '', 'yes' );
+    }
+    if ( false === get_option( 'acf_icomoon_sprite_path' ) ) {
+        add_option( 'acf_icomoon_sprite_path', '', '', 'no' );
+    }
+
+    // Flush rewrite rules
+    flush_rewrite_rules();
+}
+
+/**
+ * Plugin deactivation handler
+ *
+ * @return void
+ */
+function acf_icomoon_deactivate(): void {
+    // Clean up if needed
+    flush_rewrite_rules();
+}
+
+// Register activation and deactivation hooks outside the class
+// to ensure they work even when ACF is not installed
+register_activation_hook( __FILE__, 'acf_icomoon_activate' );
+register_deactivation_hook( __FILE__, 'acf_icomoon_deactivate' );
 
 /**
  * Main plugin class
@@ -144,9 +193,8 @@ final class ACF_IcoMoon_Integration {
         add_action( 'plugins_loaded', array( $this, 'init' ) );
         add_action( 'init', array( $this, 'load_textdomain' ) );
         
-        // Register activation and deactivation hooks
-        register_activation_hook( __FILE__, array( $this, 'activate' ) );
-        register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+        // Note: Activation and deactivation hooks are registered outside the class
+        // to ensure they work even when ACF is not installed
     }
 
     /**
@@ -193,46 +241,6 @@ final class ACF_IcoMoon_Integration {
         new ACF_IcoMoon_Field();
     }
 
-    /**
-     * Plugin activation hook
-     *
-     * @return void
-     */
-    public function activate(): void {
-        // Check if ACF is active before activating
-        if ( ! acf_icomoon_is_acf_active() ) {
-            deactivate_plugins( ACF_ICOMOON_PLUGIN_BASENAME );
-            wp_die(
-                esc_html__( 'This plugin requires Advanced Custom Fields (ACF) to be installed and activated.', 'acf-icomoon' ),
-                esc_html__( 'Plugin Activation Error', 'acf-icomoon' ),
-                array( 'back_link' => true )
-            );
-        }
-
-        // Set default options
-        if ( false === get_option( 'acf_icomoon_icons' ) ) {
-            add_option( 'acf_icomoon_icons', array() );
-        }
-        if ( false === get_option( 'acf_icomoon_sprite_url' ) ) {
-            add_option( 'acf_icomoon_sprite_url', '' );
-        }
-        if ( false === get_option( 'acf_icomoon_sprite_path' ) ) {
-            add_option( 'acf_icomoon_sprite_path', '' );
-        }
-
-        // Flush rewrite rules
-        flush_rewrite_rules();
-    }
-
-    /**
-     * Plugin deactivation hook
-     *
-     * @return void
-     */
-    public function deactivate(): void {
-        // Clean up if needed
-        flush_rewrite_rules();
-    }
 }
 
 /**
@@ -241,10 +249,16 @@ final class ACF_IcoMoon_Integration {
  * @return ACF_IcoMoon_Integration|null
  */
 function acf_icomoon(): ?ACF_IcoMoon_Integration {
+    static $admin_notice_registered = false;
+    
     // Check if ACF is active before initializing
     if ( ! acf_icomoon_is_acf_active() ) {
-        // Add admin notice
-        add_action( 'admin_notices', 'acf_icomoon_admin_notice_missing_acf' );
+        // Register admin notice only once to prevent duplicate notices
+        // when helper functions call this function multiple times
+        if ( ! $admin_notice_registered && is_admin() ) {
+            add_action( 'admin_notices', 'acf_icomoon_admin_notice_missing_acf' );
+            $admin_notice_registered = true;
+        }
         return null;
     }
 

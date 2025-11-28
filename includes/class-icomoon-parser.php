@@ -282,33 +282,46 @@ class ACF_IcoMoon_Parser {
 
         // Validate file type
         $allowed_types = array(
-            'json' => array( 'application/json', 'text/plain' ),
-            'svg'  => array( 'image/svg+xml', 'text/plain', 'application/octet-stream' ),
+            'json' => array(
+                'extensions' => array( 'json' ),
+                'mimes'      => array( 'application/json', 'text/plain', 'text/json' ),
+            ),
+            'svg'  => array(
+                'extensions' => array( 'svg' ),
+                'mimes'      => array( 'image/svg+xml', 'text/plain', 'application/octet-stream', 'text/html' ),
+            ),
         );
 
+        if ( ! isset( $allowed_types[ $type ] ) ) {
+            return new WP_Error( 
+                'invalid_type', 
+                __( 'Invalid file type specified.', 'acf-icomoon' ) 
+            );
+        }
+
+        $extension = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+        
+        // Check extension
+        if ( ! in_array( $extension, $allowed_types[ $type ]['extensions'], true ) ) {
+            return new WP_Error( 
+                'invalid_type', 
+                sprintf(
+                    /* translators: %s: file extension */
+                    __( 'Please upload a valid .%s file.', 'acf-icomoon' ),
+                    $allowed_types[ $type ]['extensions'][0]
+                )
+            );
+        }
+
+        // Check MIME type
         $finfo = new finfo( FILEINFO_MIME_TYPE );
         $mime_type = $finfo->file( $file['tmp_name'] );
 
-        // For JSON files, also check extension since MIME detection isn't always reliable
-        if ( 'json' === $type ) {
-            $extension = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
-            if ( 'json' !== $extension ) {
-                return new WP_Error( 
-                    'invalid_type', 
-                    __( 'Please upload a valid .json file.', 'acf-icomoon' ) 
-                );
-            }
-        }
-
-        // For SVG files, check extension
-        if ( 'svg' === $type ) {
-            $extension = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
-            if ( 'svg' !== $extension ) {
-                return new WP_Error( 
-                    'invalid_type', 
-                    __( 'Please upload a valid .svg file.', 'acf-icomoon' ) 
-                );
-            }
+        if ( ! in_array( $mime_type, $allowed_types[ $type ]['mimes'], true ) ) {
+            return new WP_Error( 
+                'invalid_mime', 
+                __( 'The file MIME type is not allowed.', 'acf-icomoon' ) 
+            );
         }
 
         // Check file size (max 5MB)

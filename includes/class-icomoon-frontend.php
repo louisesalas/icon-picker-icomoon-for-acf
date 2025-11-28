@@ -217,9 +217,12 @@ class ACF_IcoMoon_Frontend {
         
         libxml_clear_errors();
 
+        // Sanitize icon name for XPath query (allow only alphanumeric, hyphens, underscores)
+        $safe_icon_name = preg_replace( '/[^a-zA-Z0-9_-]/', '', $icon_name );
+
         // Find the symbol
         $xpath = new DOMXPath( $dom );
-        $symbols = $xpath->query( "//symbol[@id='icon-{$icon_name}']" );
+        $symbols = $xpath->query( "//symbol[@id='icon-{$safe_icon_name}']" );
 
         if ( $symbols->length === 0 ) {
             return '';

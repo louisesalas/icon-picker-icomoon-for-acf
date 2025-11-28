@@ -107,20 +107,23 @@ class ACF_IcoMoon_Admin {
             true
         );
 
-        wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
-            'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-            'nonce'       => wp_create_nonce( 'acf_icomoon_nonce' ),
-            'spriteUrl'   => get_option( 'acf_icomoon_sprite_url', '' ),
-            'icons'       => $this->parser->get_saved_icons(),
-            'strings'     => array(
-                'confirmClear' => __( 'Are you sure you want to remove all icons? This cannot be undone.', 'acf-icomoon' ),
-                'clearing'     => __( 'Clearing...', 'acf-icomoon' ),
-                'cleared'      => __( 'Icons cleared successfully.', 'acf-icomoon' ),
-                'error'        => __( 'An error occurred. Please try again.', 'acf-icomoon' ),
-                'search'       => __( 'Search icons...', 'acf-icomoon' ),
-                'noResults'    => __( 'No icons found.', 'acf-icomoon' ),
-            ),
-        ) );
+        // Only localize on the settings page - ACF field handles its own localization
+        if ( 'settings_page_' . $this->page_slug === $hook ) {
+            wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
+                'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+                'nonce'       => wp_create_nonce( 'acf_icomoon_nonce' ),
+                'spriteUrl'   => get_option( 'acf_icomoon_sprite_url', '' ),
+                'icons'       => $this->parser->get_saved_icons(),
+                'strings'     => array(
+                    'confirmClear' => __( 'Are you sure you want to remove all icons? This cannot be undone.', 'acf-icomoon' ),
+                    'clearing'     => __( 'Clearing...', 'acf-icomoon' ),
+                    'cleared'      => __( 'Icons cleared successfully.', 'acf-icomoon' ),
+                    'error'        => __( 'An error occurred. Please try again.', 'acf-icomoon' ),
+                    'search'       => __( 'Search icons...', 'acf-icomoon' ),
+                    'noResults'    => __( 'No icons found.', 'acf-icomoon' ),
+                ),
+            ) );
+        }
     }
 
     /**
@@ -135,7 +138,7 @@ class ACF_IcoMoon_Admin {
         }
 
         // Verify nonce
-        if ( ! wp_verify_nonce( $_POST['acf_icomoon_upload_nonce'], 'acf_icomoon_upload' ) ) {
+        if ( ! wp_verify_nonce( wp_unslash( $_POST['acf_icomoon_upload_nonce'] ), 'acf_icomoon_upload' ) ) {
             add_settings_error(
                 'acf_icomoon',
                 'nonce_error',
@@ -232,16 +235,25 @@ class ACF_IcoMoon_Admin {
             
             if ( ! is_wp_error( $sprite ) ) {
                 $sprite_path = $target_dir . '/sprite.svg';
-                file_put_contents( $sprite_path, $sprite );
+                $write_result = file_put_contents( $sprite_path, $sprite );
                 
-                $sprite_url = str_replace( 
-                    $upload_dir['basedir'], 
-                    $upload_dir['baseurl'], 
-                    $sprite_path 
-                );
-                
-                update_option( 'acf_icomoon_sprite_url', $sprite_url );
-                update_option( 'acf_icomoon_sprite_path', $sprite_path );
+                if ( false === $write_result ) {
+                    add_settings_error(
+                        'acf_icomoon',
+                        'sprite_write_error',
+                        __( 'Failed to write the SVG sprite file. Please check directory permissions.', 'acf-icomoon' ),
+                        'warning'
+                    );
+                } else {
+                    $sprite_url = str_replace( 
+                        $upload_dir['basedir'], 
+                        $upload_dir['baseurl'], 
+                        $sprite_path 
+                    );
+                    
+                    update_option( 'acf_icomoon_sprite_url', $sprite_url );
+                    update_option( 'acf_icomoon_sprite_path', $sprite_path );
+                }
             }
         }
 
@@ -355,11 +367,14 @@ class ACF_IcoMoon_Admin {
         $upload_dir = wp_upload_dir();
         $icomoon_dir = $upload_dir['basedir'] . '/acf-icomoon';
 
-        if ( file_exists( $icomoon_dir . '/selection.json' ) ) {
-            unlink( $icomoon_dir . '/selection.json' );
+        $selection_file = $icomoon_dir . '/selection.json';
+        $sprite_file = $icomoon_dir . '/sprite.svg';
+
+        if ( file_exists( $selection_file ) ) {
+            wp_delete_file( $selection_file );
         }
-        if ( file_exists( $icomoon_dir . '/sprite.svg' ) ) {
-            unlink( $icomoon_dir . '/sprite.svg' );
+        if ( file_exists( $sprite_file ) ) {
+            wp_delete_file( $sprite_file );
         }
 
         wp_send_json_success( array( 
