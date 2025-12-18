@@ -1,20 +1,20 @@
 /**
- * ACF IcoMoon Admin Styles
+ * IPIACF Admin Styles
  *
  * Styles for the admin settings page and ACF field type.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 /* ==========================================================================
    Settings Page Layout
    ========================================================================== */
 
-.acf-icomoon-admin {
+.ipiacf-admin {
     max-width: 1200px;
 }
 
-.acf-icomoon-grid {
+.ipiacf-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
@@ -22,7 +22,7 @@
 }
 
 @media screen and (max-width: 782px) {
-    .acf-icomoon-grid {
+    .ipiacf-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -31,7 +31,7 @@
    Cards
    ========================================================================== */
 
-.acf-icomoon-card {
+.ipiacf-card {
     background: #fff;
     border: 1px solid #c3c4c7;
     border-radius: 4px;
@@ -39,18 +39,18 @@
     margin-bottom: 20px;
 }
 
-.acf-icomoon-card h2 {
+.ipiacf-card h2 {
     margin-top: 0;
     padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 }
 
-.acf-icomoon-card h3 {
+.ipiacf-card h3 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.acf-icomoon-card pre {
+.ipiacf-card pre {
     background: #f6f7f7;
     padding: 15px;
     overflow-x: auto;
@@ -58,7 +58,7 @@
     border: 1px solid #ddd;
 }
 
-.acf-icomoon-card code {
+.ipiacf-card code {
     background: transparent;
     padding: 0;
 }
@@ -67,22 +67,22 @@
    Status Table
    ========================================================================== */
 
-.acf-icomoon-status-table {
+.ipiacf-status-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.acf-icomoon-status-table td {
+.ipiacf-status-table td {
     padding: 8px 0;
     border-bottom: 1px solid #eee;
 }
 
-.acf-icomoon-status-table td:first-child {
+.ipiacf-status-table td:first-child {
     width: 120px;
     color: #646970;
 }
 
-.acf-icomoon-status-table code {
+.ipiacf-status-table code {
     background: #f6f7f7;
     padding: 2px 6px;
     border-radius: 3px;
@@ -94,14 +94,14 @@
    Icon Search
    ========================================================================== */
 
-.acf-icomoon-search-wrap {
+.ipiacf-search-wrap {
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
 }
 
-.acf-icomoon-search {
+.ipiacf-search {
     flex: 1;
     max-width: 300px;
     padding: 8px 12px;
@@ -110,13 +110,13 @@
     font-size: 14px;
 }
 
-.acf-icomoon-search:focus {
+.ipiacf-search:focus {
     border-color: #2271b1;
     box-shadow: 0 0 0 1px #2271b1;
     outline: none;
 }
 
-.acf-icomoon-count {
+.ipiacf-count {
     color: #646970;
     font-size: 13px;
 }
@@ -125,7 +125,7 @@
    Icons Grid (Settings Page)
    ========================================================================== */
 
-.acf-icomoon-icons-grid {
+.ipiacf-icons-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
@@ -134,7 +134,7 @@
     padding: 5px;
 }
 
-.acf-icomoon-icon-item {
+.ipiacf-icon-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -146,25 +146,25 @@
     transition: all 0.15s ease;
 }
 
-.acf-icomoon-icon-item:hover {
+.ipiacf-icon-item:hover {
     background: #fff;
     border-color: #2271b1;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.acf-icomoon-icon-preview {
+.ipiacf-icon-preview {
     font-size: 24px;
     line-height: 1;
     margin-bottom: 8px;
     color: #1d2327;
 }
 
-.acf-icomoon-icon-preview .icomoon-icon {
+.ipiacf-icon-preview .icomoon-icon {
     width: 24px;
     height: 24px;
 }
 
-.acf-icomoon-icon-name {
+.ipiacf-icon-name {
     font-size: 11px;
     color: #646970;
     text-align: center;
@@ -172,7 +172,7 @@
     max-width: 100%;
 }
 
-.acf-icomoon-no-results {
+.ipiacf-no-results {
     text-align: center;
     color: #646970;
     padding: 40px 20px;
@@ -182,12 +182,12 @@
    Clear Button
    ========================================================================== */
 
-.acf-icomoon-clear-btn {
+.ipiacf-clear-btn {
     color: #d63638 !important;
     border-color: #d63638 !important;
 }
 
-.acf-icomoon-clear-btn:hover {
+.ipiacf-clear-btn:hover {
     background: #d63638 !important;
     color: #fff !important;
 }
@@ -196,25 +196,25 @@
    ACF Field Styles
    ========================================================================== */
 
-.acf-icomoon-field-wrap {
+.ipiacf-field-wrap {
     position: relative;
 }
 
 /* Selected Icons */
-.acf-icomoon-selected {
+.ipiacf-selected {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
 
-.acf-icomoon-selected-icons {
+.ipiacf-selected-icons {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-.acf-icomoon-selected-item {
+.ipiacf-selected-item {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -225,16 +225,16 @@
     font-size: 13px;
 }
 
-.acf-icomoon-selected-item .icomoon-icon {
+.ipiacf-selected-item .icomoon-icon {
     width: 18px;
     height: 18px;
 }
 
-.acf-icomoon-selected-name {
+.ipiacf-selected-name {
     color: #1d2327;
 }
 
-.acf-icomoon-remove {
+.ipiacf-remove {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -252,13 +252,13 @@
     transition: all 0.15s ease;
 }
 
-.acf-icomoon-remove:hover {
+.ipiacf-remove:hover {
     background: #d63638;
     color: #fff;
 }
 
 /* Picker Modal */
-.acf-icomoon-picker {
+.ipiacf-picker {
     margin-top: 15px;
     padding: 15px;
     background: #fff;
@@ -267,11 +267,11 @@
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.acf-icomoon-picker-search {
+.ipiacf-picker-search {
     margin-bottom: 15px;
 }
 
-.acf-icomoon-search-input {
+.ipiacf-search-input {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid #8c8f94;
@@ -279,14 +279,14 @@
     font-size: 14px;
 }
 
-.acf-icomoon-search-input:focus {
+.ipiacf-search-input:focus {
     border-color: #2271b1;
     box-shadow: 0 0 0 1px #2271b1;
     outline: none;
 }
 
 /* Picker Grid */
-.acf-icomoon-picker-grid {
+.ipiacf-picker-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     gap: 8px;
@@ -296,7 +296,7 @@
     margin-bottom: 15px;
 }
 
-.acf-icomoon-picker-item {
+.ipiacf-picker-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -308,23 +308,23 @@
     transition: all 0.15s ease;
 }
 
-.acf-icomoon-picker-item:hover {
+.ipiacf-picker-item:hover {
     background: #e7f3ff;
     border-color: #72aee6;
 }
 
-.acf-icomoon-picker-item.is-selected {
+.ipiacf-picker-item.is-selected {
     background: #e7f3ff;
     border-color: #2271b1;
 }
 
-.acf-icomoon-picker-item .icomoon-icon {
+.ipiacf-picker-item .icomoon-icon {
     width: 20px;
     height: 20px;
     margin-bottom: 5px;
 }
 
-.acf-icomoon-picker-name {
+.ipiacf-picker-name {
     font-size: 10px;
     color: #646970;
     text-align: center;
@@ -333,7 +333,7 @@
     line-height: 1.2;
 }
 
-.acf-icomoon-picker-no-results {
+.ipiacf-picker-no-results {
     text-align: center;
     color: #646970;
     padding: 30px 20px;
@@ -341,7 +341,7 @@
 }
 
 /* Picker Actions */
-.acf-icomoon-picker-actions {
+.ipiacf-picker-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -350,18 +350,18 @@
 }
 
 /* No Icons Message */
-.acf-icomoon-no-icons {
+.ipiacf-no-icons {
     text-align: center;
     padding: 30px 20px;
     color: #646970;
 }
 
-.acf-icomoon-no-icons a {
+.ipiacf-no-icons a {
     color: #2271b1;
     text-decoration: none;
 }
 
-.acf-icomoon-no-icons a:hover {
+.ipiacf-no-icons a:hover {
     text-decoration: underline;
 }
 
@@ -383,7 +383,7 @@
    Preview Section
    ========================================================================== */
 
-.acf-icomoon-preview-section {
+.ipiacf-preview-section {
     grid-column: 1 / -1;
 }
 
@@ -392,20 +392,20 @@
    ========================================================================== */
 
 @media screen and (max-width: 600px) {
-    .acf-icomoon-icons-grid {
+    .ipiacf-icons-grid {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
     
-    .acf-icomoon-picker-grid {
+    .ipiacf-picker-grid {
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     }
     
-    .acf-icomoon-search-wrap {
+    .ipiacf-search-wrap {
         flex-direction: column;
         align-items: stretch;
     }
     
-    .acf-icomoon-search {
+    .ipiacf-search {
         max-width: 100%;
     }
 }
@@ -414,7 +414,7 @@
    Gutenberg / Block Editor Compatibility
    ========================================================================== */
 
-.block-editor-page .acf-icomoon-picker {
+.block-editor-page .ipiacf-picker {
     z-index: 100;
 }
 
@@ -422,7 +422,7 @@
    Animation
    ========================================================================== */
 
-@keyframes acf-icomoon-fade-in {
+@keyframes ipiacf-fade-in {
     from {
         opacity: 0;
         transform: translateY(-10px);
@@ -433,8 +433,8 @@
     }
 }
 
-.acf-icomoon-picker {
-    animation: acf-icomoon-fade-in 0.2s ease;
+.ipiacf-picker {
+    animation: ipiacf-fade-in 0.2s ease;
 }
 
 /* ==========================================================================
@@ -442,26 +442,25 @@
    ========================================================================== */
 
 @media (prefers-color-scheme: dark) {
-    .acf-icomoon-card {
+    .ipiacf-card {
         background: #2c3338;
         border-color: #3c434a;
     }
     
-    .acf-icomoon-card h2 {
+    .ipiacf-card h2 {
         border-bottom-color: #3c434a;
     }
     
-    .acf-icomoon-icon-item {
+    .ipiacf-icon-item {
         background: #3c434a;
         border-color: #50575e;
     }
     
-    .acf-icomoon-icon-item:hover {
+    .ipiacf-icon-item:hover {
         background: #50575e;
     }
     
-    .acf-icomoon-icon-preview {
+    .ipiacf-icon-preview {
         color: #f0f0f1;
     }
 }
-

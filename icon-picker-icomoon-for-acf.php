@@ -3,7 +3,7 @@
  * Plugin Name: Icon Picker using IcoMoon for ACF
  * Plugin URI: https://github.com/louisesalas/icon-picker-icomoon-for-acf
  * Description: Adds IcoMoon icon picker support for Advanced Custom Fields. Upload your IcoMoon selection.json or SVG sprite and use icons in ACF fields.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Louise Salas
  * Author URI: https://louisesalas.netlify.app/
  * License: GPL v2 or later
@@ -22,19 +22,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Plugin constants
+ * Plugin constants - Using unique IPIACF prefix (Icon Picker IcoMoon ACF)
  */
-define( 'ACF_ICOMOON_VERSION', '1.0.3' );
-define( 'ACF_ICOMOON_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'ACF_ICOMOON_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'ACF_ICOMOON_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'IPIACF_VERSION', '1.0.4' );
+define( 'IPIACF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'IPIACF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'IPIACF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Check if ACF is installed and active
  *
  * @return bool
  */
-function acf_icomoon_is_acf_active(): bool {
+function ipiacf_is_acf_active(): bool {
     // Check if ACF function exists (works for both ACF Pro and free)
     if ( function_exists( 'acf' ) || class_exists( 'ACF' ) ) {
         return true;
@@ -54,7 +54,7 @@ function acf_icomoon_is_acf_active(): bool {
  *
  * @return void
  */
-function acf_icomoon_admin_notice_missing_acf(): void {
+function ipiacf_admin_notice_missing_acf(): void {
     if ( ! is_admin() ) {
         return;
     }
@@ -77,10 +77,10 @@ function acf_icomoon_admin_notice_missing_acf(): void {
  *
  * @return void
  */
-function acf_icomoon_activate(): void {
+function ipiacf_activate(): void {
     // Check if ACF is active before activating
-    if ( ! acf_icomoon_is_acf_active() ) {
-        deactivate_plugins( ACF_ICOMOON_PLUGIN_BASENAME );
+    if ( ! ipiacf_is_acf_active() ) {
+        deactivate_plugins( IPIACF_PLUGIN_BASENAME );
         wp_die(
             esc_html__( 'This plugin requires Advanced Custom Fields (ACF) to be installed and activated.', 'icon-picker-icomoon-for-acf' ),
             esc_html__( 'Plugin Activation Error', 'icon-picker-icomoon-for-acf' ),
@@ -89,14 +89,14 @@ function acf_icomoon_activate(): void {
     }
 
     // Set default options with autoload enabled for frequently accessed options
-    if ( false === get_option( 'acf_icomoon_icons' ) ) {
-        add_option( 'acf_icomoon_icons', array(), '', 'yes' );
+    if ( false === get_option( 'ipiacf_icons' ) ) {
+        add_option( 'ipiacf_icons', array(), '', 'yes' );
     }
-    if ( false === get_option( 'acf_icomoon_sprite_url' ) ) {
-        add_option( 'acf_icomoon_sprite_url', '', '', 'yes' );
+    if ( false === get_option( 'ipiacf_sprite_url' ) ) {
+        add_option( 'ipiacf_sprite_url', '', '', 'yes' );
     }
-    if ( false === get_option( 'acf_icomoon_sprite_path' ) ) {
-        add_option( 'acf_icomoon_sprite_path', '', '', 'no' );
+    if ( false === get_option( 'ipiacf_sprite_path' ) ) {
+        add_option( 'ipiacf_sprite_path', '', '', 'no' );
     }
 
     // Flush rewrite rules
@@ -108,64 +108,64 @@ function acf_icomoon_activate(): void {
  *
  * @return void
  */
-function acf_icomoon_deactivate(): void {
+function ipiacf_deactivate(): void {
     // Clean up if needed
     flush_rewrite_rules();
 }
 
 // Register activation and deactivation hooks outside the class
 // to ensure they work even when ACF is not installed
-register_activation_hook( __FILE__, 'acf_icomoon_activate' );
-register_deactivation_hook( __FILE__, 'acf_icomoon_deactivate' );
+register_activation_hook( __FILE__, 'ipiacf_activate' );
+register_deactivation_hook( __FILE__, 'ipiacf_deactivate' );
 
 /**
  * Main plugin class
  * 
  * Handles initialization and loading of all plugin components.
  */
-final class ACF_IcoMoon_Integration {
+final class IPIACF_Integration {
 
     /**
      * Single instance of the plugin
      *
-     * @var ACF_IcoMoon_Integration|null
+     * @var IPIACF_Integration|null
      */
-    private static ?ACF_IcoMoon_Integration $instance = null;
+    private static ?IPIACF_Integration $instance = null;
 
     /**
      * Admin handler instance
      *
-     * @var ACF_IcoMoon_Admin|null
+     * @var IPIACF_Admin|null
      */
-    public ?ACF_IcoMoon_Admin $admin = null;
+    public ?IPIACF_Admin $admin = null;
 
     /**
      * Parser handler instance
      *
-     * @var ACF_IcoMoon_Parser|null
+     * @var IPIACF_Parser|null
      */
-    public ?ACF_IcoMoon_Parser $parser = null;
+    public ?IPIACF_Parser $parser = null;
 
     /**
      * Sanitizer handler instance
      *
-     * @var ACF_IcoMoon_Sanitizer|null
+     * @var IPIACF_Sanitizer|null
      */
-    public ?ACF_IcoMoon_Sanitizer $sanitizer = null;
+    public ?IPIACF_Sanitizer $sanitizer = null;
 
     /**
      * Frontend handler instance
      *
-     * @var ACF_IcoMoon_Frontend|null
+     * @var IPIACF_Frontend|null
      */
-    public ?ACF_IcoMoon_Frontend $frontend = null;
+    public ?IPIACF_Frontend $frontend = null;
 
     /**
      * Get the single instance of the plugin
      *
-     * @return ACF_IcoMoon_Integration
+     * @return IPIACF_Integration
      */
-    public static function get_instance(): ACF_IcoMoon_Integration {
+    public static function get_instance(): IPIACF_Integration {
         if ( null === self::$instance ) {
             self::$instance = new self();
         }
@@ -186,11 +186,11 @@ final class ACF_IcoMoon_Integration {
      * @return void
      */
     private function load_dependencies(): void {
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/class-icomoon-sanitizer.php';
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/class-icomoon-parser.php';
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/class-icomoon-admin.php';
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/class-icomoon-frontend.php';
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/helper-functions.php';
+        require_once IPIACF_PLUGIN_DIR . 'includes/class-icomoon-sanitizer.php';
+        require_once IPIACF_PLUGIN_DIR . 'includes/class-icomoon-parser.php';
+        require_once IPIACF_PLUGIN_DIR . 'includes/class-icomoon-admin.php';
+        require_once IPIACF_PLUGIN_DIR . 'includes/class-icomoon-frontend.php';
+        require_once IPIACF_PLUGIN_DIR . 'includes/helper-functions.php';
     }
 
     /**
@@ -212,18 +212,18 @@ final class ACF_IcoMoon_Integration {
      */
     public function init(): void {
         // Initialize sanitizer
-        $this->sanitizer = new ACF_IcoMoon_Sanitizer();
+        $this->sanitizer = new IPIACF_Sanitizer();
 
         // Initialize parser
-        $this->parser = new ACF_IcoMoon_Parser();
+        $this->parser = new IPIACF_Parser();
 
         // Initialize admin if in admin area
         if ( is_admin() ) {
-            $this->admin = new ACF_IcoMoon_Admin( $this->parser, $this->sanitizer );
+            $this->admin = new IPIACF_Admin( $this->parser, $this->sanitizer );
         }
 
         // Initialize frontend
-        $this->frontend = new ACF_IcoMoon_Frontend();
+        $this->frontend = new IPIACF_Frontend();
 
         // Load ACF field type when ACF is ready
         add_action( 'acf/include_field_types', array( $this, 'include_field_types' ) );
@@ -235,8 +235,8 @@ final class ACF_IcoMoon_Integration {
      * @return void
      */
     public function include_field_types(): void {
-        require_once ACF_ICOMOON_PLUGIN_DIR . 'includes/class-icomoon-field.php';
-        new ACF_IcoMoon_Field();
+        require_once IPIACF_PLUGIN_DIR . 'includes/class-icomoon-field.php';
+        new IPIACF_Field();
     }
 
 }
@@ -244,24 +244,24 @@ final class ACF_IcoMoon_Integration {
 /**
  * Initialize the plugin
  *
- * @return ACF_IcoMoon_Integration|null
+ * @return IPIACF_Integration|null
  */
-function acf_icomoon(): ?ACF_IcoMoon_Integration {
+function ipiacf(): ?IPIACF_Integration {
     static $admin_notice_registered = false;
     
     // Check if ACF is active before initializing
-    if ( ! acf_icomoon_is_acf_active() ) {
+    if ( ! ipiacf_is_acf_active() ) {
         // Register admin notice only once to prevent duplicate notices
         // when helper functions call this function multiple times
         if ( ! $admin_notice_registered && is_admin() ) {
-            add_action( 'admin_notices', 'acf_icomoon_admin_notice_missing_acf' );
+            add_action( 'admin_notices', 'ipiacf_admin_notice_missing_acf' );
             $admin_notice_registered = true;
         }
         return null;
     }
 
-    return ACF_IcoMoon_Integration::get_instance();
+    return IPIACF_Integration::get_instance();
 }
 
 // Start the plugin only if ACF is available
-acf_icomoon();
+ipiacf();

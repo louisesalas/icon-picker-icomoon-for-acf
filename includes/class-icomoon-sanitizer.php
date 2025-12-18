@@ -4,7 +4,7 @@
  *
  * Handles sanitization of SVG content to prevent XSS and other security issues.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class ACF_IcoMoon_Sanitizer
+ * Class IPIACF_Sanitizer
  *
  * Sanitizes SVG content by removing potentially malicious elements and attributes.
  */
-class ACF_IcoMoon_Sanitizer {
+class IPIACF_Sanitizer {
 
     /**
      * Allowed SVG tags
@@ -146,8 +146,11 @@ class ACF_IcoMoon_Sanitizer {
         // Configure libxml to disable external entities and network access
         $libxml_options = LIBXML_NONET | LIBXML_NOENT | LIBXML_NOCDATA;
         
-        // Disable external entity loading
-        $previous_entity_loader = libxml_disable_entity_loader( true );
+        // Disable external entity loading (only needed for PHP < 8.0)
+        $previous_entity_loader = null;
+        if ( PHP_VERSION_ID < 80000 ) {
+            $previous_entity_loader = libxml_disable_entity_loader( true );
+        }
         libxml_use_internal_errors( true );
 
         $dom = new DOMDocument();
@@ -157,8 +160,10 @@ class ACF_IcoMoon_Sanitizer {
         // Load the SVG
         $loaded = $dom->loadXML( $svg_content, $libxml_options );
 
-        // Restore previous entity loader state
-        libxml_disable_entity_loader( $previous_entity_loader );
+        // Restore previous entity loader state (only for PHP < 8.0)
+        if ( PHP_VERSION_ID < 80000 && null !== $previous_entity_loader ) {
+            libxml_disable_entity_loader( $previous_entity_loader );
+        }
         
         if ( ! $loaded ) {
             $errors = libxml_get_errors();
@@ -369,4 +374,3 @@ class ACF_IcoMoon_Sanitizer {
         return true;
     }
 }
-

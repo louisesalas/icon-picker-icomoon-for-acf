@@ -4,7 +4,7 @@
  *
  * Global helper functions for using IcoMoon icons throughout WordPress.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -21,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param array  $atts      Optional attributes (class, width, height, etc.)
  * @return string The SVG HTML
  */
-function acf_icomoon_get_icon( string $icon_name, array $atts = array() ): string {
-    $instance = acf_icomoon();
+function ipiacf_get_icon( string $icon_name, array $atts = array() ): string {
+    $instance = ipiacf();
     
     if ( ! $instance || ! $instance->frontend ) {
         return '';
@@ -38,9 +38,9 @@ function acf_icomoon_get_icon( string $icon_name, array $atts = array() ): strin
  * @param array  $atts      Optional attributes
  * @return void
  */
-function acf_icomoon_icon( string $icon_name, array $atts = array() ): void {
+function ipiacf_icon( string $icon_name, array $atts = array() ): void {
     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    echo acf_icomoon_get_icon( $icon_name, $atts );
+    echo ipiacf_get_icon( $icon_name, $atts );
 }
 
 /**
@@ -48,8 +48,8 @@ function acf_icomoon_icon( string $icon_name, array $atts = array() ): void {
  *
  * @return bool
  */
-function acf_icomoon_has_icons(): bool {
-    $icons = get_option( 'acf_icomoon_icons', array() );
+function ipiacf_has_icons(): bool {
+    $icons = get_option( 'ipiacf_icons', array() );
     return ! empty( $icons );
 }
 
@@ -58,7 +58,6 @@ function acf_icomoon_has_icons(): bool {
  *
  * @return array
  */
-function acf_icomoon_get_icons(): array {
-    return get_option( 'acf_icomoon_icons', array() );
+function ipiacf_get_icons(): array {
+    return get_option( 'ipiacf_icons', array() );
 }
-

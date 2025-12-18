@@ -4,7 +4,7 @@
  *
  * Handles frontend rendering and asset loading for IcoMoon icons.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class ACF_IcoMoon_Frontend
+ * Class IPIACF_Frontend
  *
  * Frontend functionality including helper functions and asset loading.
  */
-class ACF_IcoMoon_Frontend {
+class IPIACF_Frontend {
 
     /**
      * Whether the sprite has been enqueued
@@ -54,7 +54,7 @@ class ACF_IcoMoon_Frontend {
      */
     public function enqueue_frontend_styles(): void {
         // Only enqueue if icons exist
-        if ( ! acf_icomoon_has_icons() ) {
+        if ( ! ipiacf_has_icons() ) {
             return;
         }
 
@@ -63,11 +63,11 @@ class ACF_IcoMoon_Frontend {
         
         if ( ! empty( $css ) ) {
             // Use plugin version if available, otherwise fall back to timestamp of last icon update
-            $version = defined( 'ACF_ICOMOON_VERSION' ) ? ACF_ICOMOON_VERSION : get_option( 'acf_icomoon_last_update', '1.0.0' );
+            $version = defined( 'IPIACF_VERSION' ) ? IPIACF_VERSION : get_option( 'ipiacf_last_update', '1.0.0' );
             
-            wp_register_style( 'acf-icomoon-icons', false, array(), $version );
-            wp_enqueue_style( 'acf-icomoon-icons' );
-            wp_add_inline_style( 'acf-icomoon-icons', $css );
+            wp_register_style( 'ipiacf-icons', false, array(), $version );
+            wp_enqueue_style( 'ipiacf-icons' );
+            wp_add_inline_style( 'ipiacf-icons', $css );
         }
     }
 
@@ -100,7 +100,7 @@ class ACF_IcoMoon_Frontend {
             return;
         }
 
-        $sprite_path = get_option( 'acf_icomoon_sprite_path', '' );
+        $sprite_path = get_option( 'ipiacf_sprite_path', '' );
         
         if ( empty( $sprite_path ) || ! file_exists( $sprite_path ) ) {
             return;
@@ -151,7 +151,7 @@ class ACF_IcoMoon_Frontend {
         $icon_name = preg_replace( '/^icon-/', '', $icon_name );
 
         // Get sprite URL
-        $sprite_url = get_option( 'acf_icomoon_sprite_url', '' );
+        $sprite_url = get_option( 'ipiacf_sprite_url', '' );
 
         if ( empty( $sprite_url ) ) {
             return '';
@@ -217,7 +217,7 @@ class ACF_IcoMoon_Frontend {
         // Clean icon name
         $icon_name = preg_replace( '/^icon-/', '', $icon_name );
 
-        $sprite_path = get_option( 'acf_icomoon_sprite_path', '' );
+        $sprite_path = get_option( 'ipiacf_sprite_path', '' );
 
         if ( empty( $sprite_path ) || ! file_exists( $sprite_path ) ) {
             return '';
@@ -235,8 +235,11 @@ class ACF_IcoMoon_Frontend {
         // Load and parse sprite with security settings
         $libxml_options = LIBXML_NONET | LIBXML_NOENT | LIBXML_NOCDATA;
         
-        // Disable external entity loading to prevent XXE attacks
-        $previous_entity_loader = libxml_disable_entity_loader( true );
+        // Disable external entity loading to prevent XXE attacks (only needed for PHP < 8.0)
+        $previous_entity_loader = null;
+        if ( PHP_VERSION_ID < 80000 ) {
+            $previous_entity_loader = libxml_disable_entity_loader( true );
+        }
         libxml_use_internal_errors( true );
         
         $dom = new DOMDocument();
@@ -244,8 +247,10 @@ class ACF_IcoMoon_Frontend {
         $dom->resolveExternals = false;
         $dom->load( $sprite_path, $libxml_options );
         
-        // Restore previous entity loader state
-        libxml_disable_entity_loader( $previous_entity_loader );
+        // Restore previous entity loader state (only for PHP < 8.0)
+        if ( PHP_VERSION_ID < 80000 && null !== $previous_entity_loader ) {
+            libxml_disable_entity_loader( $previous_entity_loader );
+        }
         libxml_clear_errors();
 
         // Sanitize icon name for XPath query (allow only alphanumeric, hyphens, underscores)
@@ -324,7 +329,7 @@ class ACF_IcoMoon_Frontend {
      */
     public function icon_exists( string $icon_name ): bool {
         $icon_name = preg_replace( '/^icon-/', '', $icon_name );
-        $icons = get_option( 'acf_icomoon_icons', array() );
+        $icons = get_option( 'ipiacf_icons', array() );
 
         foreach ( $icons as $icon ) {
             if ( $icon['name'] === $icon_name ) {
@@ -335,4 +340,3 @@ class ACF_IcoMoon_Frontend {
         return false;
     }
 }
-

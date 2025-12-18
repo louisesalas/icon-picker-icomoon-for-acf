@@ -4,7 +4,7 @@
  *
  * Handles parsing of IcoMoon selection.json and SVG sprite files.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class ACF_IcoMoon_Parser
+ * Class IPIACF_Parser
  *
  * Parses IcoMoon files and extracts icon information.
  */
-class ACF_IcoMoon_Parser {
+class IPIACF_Parser {
 
     /**
      * Parse a selection.json file and extract icon names
@@ -132,10 +132,9 @@ class ACF_IcoMoon_Parser {
         $icons = array();
 
         // Use DOMDocument to parse SVG with security settings
+        // LIBXML_NONET prevents network access, LIBXML_NOENT disables entity substitution
         $libxml_options = LIBXML_NONET | LIBXML_NOENT | LIBXML_NOCDATA;
         
-        // Disable external entity loading to prevent XXE attacks
-        $previous_entity_loader = libxml_disable_entity_loader( true );
         libxml_use_internal_errors( true );
         
         $dom = new DOMDocument();
@@ -143,8 +142,6 @@ class ACF_IcoMoon_Parser {
         $dom->resolveExternals = false;
         $dom->loadXML( $content, $libxml_options );
         
-        // Restore previous entity loader state
-        libxml_disable_entity_loader( $previous_entity_loader );
         libxml_clear_errors();
 
         // Find all symbol elements
@@ -350,7 +347,7 @@ class ACF_IcoMoon_Parser {
      * @return array
      */
     public function get_saved_icons(): array {
-        return get_option( 'acf_icomoon_icons', array() );
+        return get_option( 'ipiacf_icons', array() );
     }
 
     /**
@@ -360,7 +357,7 @@ class ACF_IcoMoon_Parser {
      * @return bool
      */
     public function save_icons( array $icons ): bool {
-        return update_option( 'acf_icomoon_icons', $icons );
+        return update_option( 'ipiacf_icons', $icons );
     }
 
     /**
@@ -369,9 +366,9 @@ class ACF_IcoMoon_Parser {
      * @return bool
      */
     public function clear_icons(): bool {
-        delete_option( 'acf_icomoon_sprite_url' );
-        delete_option( 'acf_icomoon_sprite_path' );
-        return update_option( 'acf_icomoon_icons', array() );
+        delete_option( 'ipiacf_sprite_url' );
+        delete_option( 'ipiacf_sprite_path' );
+        return update_option( 'ipiacf_icons', array() );
     }
 
     /**
@@ -423,4 +420,3 @@ class ACF_IcoMoon_Parser {
         return true;
     }
 }
-

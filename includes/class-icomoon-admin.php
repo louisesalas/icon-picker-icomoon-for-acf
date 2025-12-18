@@ -4,7 +4,7 @@
  *
  * Handles the admin settings page for IcoMoon icon management.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -14,47 +14,47 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class ACF_IcoMoon_Admin
+ * Class IPIACF_Admin
  *
  * Admin settings and icon management interface.
  */
-class ACF_IcoMoon_Admin {
+class IPIACF_Admin {
 
     /**
      * Parser instance
      *
-     * @var ACF_IcoMoon_Parser
+     * @var IPIACF_Parser
      */
-    private ACF_IcoMoon_Parser $parser;
+    private IPIACF_Parser $parser;
 
     /**
      * Sanitizer instance
      *
-     * @var ACF_IcoMoon_Sanitizer
+     * @var IPIACF_Sanitizer
      */
-    private ACF_IcoMoon_Sanitizer $sanitizer;
+    private IPIACF_Sanitizer $sanitizer;
 
     /**
      * Option group name
      *
      * @var string
      */
-    private string $option_group = 'acf_icomoon_settings';
+    private string $option_group = 'ipiacf_settings';
 
     /**
      * Settings page slug
      *
      * @var string
      */
-    private string $page_slug = 'acf-icomoon-icons';
+    private string $page_slug = 'ipiacf-icomoon-icons';
 
     /**
      * Constructor
      *
-     * @param ACF_IcoMoon_Parser     $parser    Parser instance
-     * @param ACF_IcoMoon_Sanitizer  $sanitizer Sanitizer instance
+     * @param IPIACF_Parser     $parser    Parser instance
+     * @param IPIACF_Sanitizer  $sanitizer Sanitizer instance
      */
-    public function __construct( ACF_IcoMoon_Parser $parser, ACF_IcoMoon_Sanitizer $sanitizer ) {
+    public function __construct( IPIACF_Parser $parser, IPIACF_Sanitizer $sanitizer ) {
         $this->parser = $parser;
         $this->sanitizer = $sanitizer;
         $this->init_hooks();
@@ -69,7 +69,7 @@ class ACF_IcoMoon_Admin {
         add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
         add_action( 'admin_init', array( $this, 'handle_file_upload' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
-        add_action( 'wp_ajax_acf_icomoon_clear_icons', array( $this, 'ajax_clear_icons' ) );
+        add_action( 'wp_ajax_ipiacf_clear_icons', array( $this, 'ajax_clear_icons' ) );
     }
 
     /**
@@ -102,26 +102,26 @@ class ACF_IcoMoon_Admin {
         }
 
         wp_enqueue_style(
-            'acf-icomoon-admin',
-            ACF_ICOMOON_PLUGIN_URL . 'assets/css/admin.css',
+            'ipiacf-admin',
+            IPIACF_PLUGIN_URL . 'assets/css/admin.css',
             array(),
-            ACF_ICOMOON_VERSION
+            IPIACF_VERSION
         );
 
         wp_enqueue_script(
-            'acf-icomoon-admin',
-            ACF_ICOMOON_PLUGIN_URL . 'assets/js/admin.js',
+            'ipiacf-admin',
+            IPIACF_PLUGIN_URL . 'assets/js/admin.js',
             array( 'jquery' ),
-            ACF_ICOMOON_VERSION,
+            IPIACF_VERSION,
             true
         );
 
         // Only localize on the settings page - ACF field handles its own localization
         if ( 'settings_page_' . $this->page_slug === $hook ) {
-            wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
+            wp_localize_script( 'ipiacf-admin', 'ipiacfData', array(
                 'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-                'nonce'       => wp_create_nonce( 'acf_icomoon_nonce' ),
-                'spriteUrl'   => get_option( 'acf_icomoon_sprite_url', '' ),
+                'nonce'       => wp_create_nonce( 'ipiacf_nonce' ),
+                'spriteUrl'   => get_option( 'ipiacf_sprite_url', '' ),
                 'icons'       => $this->parser->get_saved_icons(),
                 'strings'     => array(
                     'confirmClear' => __( 'Are you sure you want to remove all icons? This cannot be undone.', 'icon-picker-icomoon-for-acf' ),
@@ -197,15 +197,15 @@ class ACF_IcoMoon_Admin {
      */
     public function handle_file_upload(): void {
         // Check if form was submitted
-        if ( ! isset( $_POST['acf_icomoon_upload_nonce'] ) ) {
+        if ( ! isset( $_POST['ipiacf_upload_nonce'] ) ) {
             return;
         }
 
         // Verify nonce
-        $nonce = sanitize_text_field( wp_unslash( $_POST['acf_icomoon_upload_nonce'] ) );
-        if ( ! wp_verify_nonce( $nonce, 'acf_icomoon_upload' ) ) {
+        $nonce = sanitize_text_field( wp_unslash( $_POST['ipiacf_upload_nonce'] ) );
+        if ( ! wp_verify_nonce( $nonce, 'ipiacf_upload' ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'nonce_error',
                 __( 'Security check failed. Please try again.', 'icon-picker-icomoon-for-acf' ),
                 'error'
@@ -216,7 +216,7 @@ class ACF_IcoMoon_Admin {
         // Check permissions
         if ( ! current_user_can( 'manage_options' ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'permission_error',
                 __( 'You do not have permission to perform this action.', 'icon-picker-icomoon-for-acf' ),
                 'error'
@@ -225,7 +225,7 @@ class ACF_IcoMoon_Admin {
         }
 
         $upload_dir = wp_upload_dir();
-        $icomoon_dir = $upload_dir['basedir'] . '/acf-icomoon';
+        $icomoon_dir = $upload_dir['basedir'] . '/ipiacf-icomoon';
 
         // Create directory if it doesn't exist
         if ( ! file_exists( $icomoon_dir ) ) {
@@ -260,7 +260,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $validation ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'validation_error',
                 $validation->get_error_message(),
                 'error'
@@ -282,7 +282,7 @@ class ACF_IcoMoon_Admin {
         // Copy the uploaded file to the target location
         if ( ! $wp_filesystem->move( $file['tmp_name'], $target_path, true ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'move_error',
                 __( 'Failed to save the uploaded file.', 'icon-picker-icomoon-for-acf' ),
                 'error'
@@ -295,7 +295,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $icons ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'parse_error',
                 $icons->get_error_message(),
                 'error'
@@ -307,7 +307,7 @@ class ACF_IcoMoon_Admin {
         $this->parser->save_icons( $icons );
 
         // Generate and save sprite if no sprite is uploaded
-        if ( empty( get_option( 'acf_icomoon_sprite_url' ) ) ) {
+        if ( empty( get_option( 'ipiacf_sprite_url' ) ) ) {
             $sprite = $this->parser->generate_sprite_from_selection( $target_path );
             
             if ( ! is_wp_error( $sprite ) ) {
@@ -316,7 +316,7 @@ class ACF_IcoMoon_Admin {
                 
                 if ( false === $write_result ) {
                     add_settings_error(
-                        'acf_icomoon',
+                        'ipiacf',
                         'sprite_write_error',
                         __( 'Failed to write the SVG sprite file. Please check directory permissions.', 'icon-picker-icomoon-for-acf' ),
                         'warning'
@@ -328,14 +328,14 @@ class ACF_IcoMoon_Admin {
                         $sprite_path 
                     );
                     
-                    update_option( 'acf_icomoon_sprite_url', $sprite_url );
-                    update_option( 'acf_icomoon_sprite_path', $sprite_path );
+                    update_option( 'ipiacf_sprite_url', $sprite_url );
+                    update_option( 'ipiacf_sprite_path', $sprite_path );
                 }
             }
         }
 
         add_settings_error(
-            'acf_icomoon',
+            'ipiacf',
             'upload_success',
             sprintf(
                 /* translators: %d: number of icons */
@@ -360,7 +360,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $validation ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'validation_error',
                 $validation->get_error_message(),
                 'error'
@@ -373,7 +373,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $svg_validation ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'svg_validation_error',
                 $svg_validation->get_error_message(),
                 'error'
@@ -394,7 +394,7 @@ class ACF_IcoMoon_Admin {
         
         if ( false === $svg_content ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'read_error',
                 __( 'Failed to read the uploaded file.', 'icon-picker-icomoon-for-acf' ),
                 'error'
@@ -406,7 +406,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $sanitized_svg ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'sanitization_error',
                 $sanitized_svg->get_error_message(),
                 'error'
@@ -422,7 +422,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $path_validation ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'path_error',
                 $path_validation->get_error_message(),
                 'error'
@@ -435,7 +435,7 @@ class ACF_IcoMoon_Admin {
         
         if ( false === $write_result ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'write_error',
                 __( 'Failed to save the sanitized file.', 'icon-picker-icomoon-for-acf' ),
                 'error'
@@ -448,7 +448,7 @@ class ACF_IcoMoon_Admin {
         
         if ( is_wp_error( $icons ) ) {
             add_settings_error(
-                'acf_icomoon',
+                'ipiacf',
                 'parse_error',
                 $icons->get_error_message(),
                 'error'
@@ -463,8 +463,8 @@ class ACF_IcoMoon_Admin {
             $target_path 
         );
         
-        update_option( 'acf_icomoon_sprite_url', $sprite_url );
-        update_option( 'acf_icomoon_sprite_path', $target_path );
+        update_option( 'ipiacf_sprite_url', $sprite_url );
+        update_option( 'ipiacf_sprite_path', $target_path );
 
         // Save icons if none exist or merge with existing
         $existing_icons = $this->parser->get_saved_icons();
@@ -474,7 +474,7 @@ class ACF_IcoMoon_Admin {
         }
 
         add_settings_error(
-            'acf_icomoon',
+            'ipiacf',
             'upload_success',
             sprintf(
                 /* translators: %d: number of icons */
@@ -491,7 +491,7 @@ class ACF_IcoMoon_Admin {
      * @return void
      */
     public function ajax_clear_icons(): void {
-        check_ajax_referer( 'acf_icomoon_nonce', 'nonce' );
+        check_ajax_referer( 'ipiacf_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( array( 
@@ -504,7 +504,7 @@ class ACF_IcoMoon_Admin {
 
         // Delete files
         $upload_dir = wp_upload_dir();
-        $icomoon_dir = $upload_dir['basedir'] . '/acf-icomoon';
+        $icomoon_dir = $upload_dir['basedir'] . '/ipiacf-icomoon';
 
         $selection_file = $icomoon_dir . '/selection.json';
         $sprite_file = $icomoon_dir . '/sprite.svg';
@@ -528,23 +528,23 @@ class ACF_IcoMoon_Admin {
      */
     public function render_settings_page(): void {
         $icons = $this->parser->get_saved_icons();
-        $sprite_url = get_option( 'acf_icomoon_sprite_url', '' );
+        $sprite_url = get_option( 'ipiacf_sprite_url', '' );
         ?>
-        <div class="wrap acf-icomoon-admin">
+        <div class="wrap ipiacf-admin">
             <h1><?php esc_html_e( 'IcoMoon Icons', 'icon-picker-icomoon-for-acf' ); ?></h1>
             
-            <?php settings_errors( 'acf_icomoon' ); ?>
+            <?php settings_errors( 'ipiacf' ); ?>
 
-            <div class="acf-icomoon-grid">
+            <div class="ipiacf-grid">
                 <!-- Upload Section -->
-                <div class="acf-icomoon-card">
+                <div class="ipiacf-card">
                     <h2><?php esc_html_e( 'Upload IcoMoon Files', 'icon-picker-icomoon-for-acf' ); ?></h2>
                     <p class="description">
                         <?php esc_html_e( 'Upload your IcoMoon selection.json file or SVG sprite to import icons.', 'icon-picker-icomoon-for-acf' ); ?>
                     </p>
 
                     <form method="post" enctype="multipart/form-data">
-                        <?php wp_nonce_field( 'acf_icomoon_upload', 'acf_icomoon_upload_nonce' ); ?>
+                        <?php wp_nonce_field( 'ipiacf_upload', 'ipiacf_upload_nonce' ); ?>
                         
                         <table class="form-table">
                             <tr>
@@ -588,8 +588,8 @@ class ACF_IcoMoon_Admin {
                             
                             <?php if ( ! empty( $icons ) ) : ?>
                                 <button type="button" 
-                                        class="button button-secondary acf-icomoon-clear-btn" 
-                                        id="acf-icomoon-clear">
+                                        class="button button-secondary ipiacf-clear-btn" 
+                                        id="ipiacf-clear">
                                     <?php esc_html_e( 'Clear All Icons', 'icon-picker-icomoon-for-acf' ); ?>
                                 </button>
                             <?php endif; ?>
@@ -598,10 +598,10 @@ class ACF_IcoMoon_Admin {
                 </div>
 
                 <!-- Status Section -->
-                <div class="acf-icomoon-card">
+                <div class="ipiacf-card">
                     <h2><?php esc_html_e( 'Current Status', 'icon-picker-icomoon-for-acf' ); ?></h2>
                     
-                    <table class="acf-icomoon-status-table">
+                    <table class="ipiacf-status-table">
                         <tr>
                             <td><?php esc_html_e( 'Icons Loaded:', 'icon-picker-icomoon-for-acf' ); ?></td>
                             <td><strong><?php echo esc_html( count( $icons ) ); ?></strong></td>
@@ -622,15 +622,15 @@ class ACF_IcoMoon_Admin {
 
             <!-- Icons Preview Section -->
             <?php if ( ! empty( $icons ) ) : ?>
-                <div class="acf-icomoon-card acf-icomoon-preview-section">
+                <div class="ipiacf-card ipiacf-preview-section">
                     <h2><?php esc_html_e( 'Icon Preview', 'icon-picker-icomoon-for-acf' ); ?></h2>
                     
-                    <div class="acf-icomoon-search-wrap">
+                    <div class="ipiacf-search-wrap">
                         <input type="text" 
-                               id="acf-icomoon-search" 
-                               class="acf-icomoon-search" 
+                               id="ipiacf-search" 
+                               class="ipiacf-search" 
                                placeholder="<?php esc_attr_e( 'Search icons...', 'icon-picker-icomoon-for-acf' ); ?>">
-                        <span class="acf-icomoon-count">
+                        <span class="ipiacf-count">
                             <?php 
                             printf( 
                                 /* translators: %d: number of icons */
@@ -641,12 +641,12 @@ class ACF_IcoMoon_Admin {
                         </span>
                     </div>
 
-                    <div class="acf-icomoon-icons-grid" id="acf-icomoon-icons-grid">
+                    <div class="ipiacf-icons-grid" id="ipiacf-icons-grid">
                         <?php foreach ( $icons as $icon ) : ?>
-                            <div class="acf-icomoon-icon-item" 
+                            <div class="ipiacf-icon-item" 
                                  data-name="<?php echo esc_attr( $icon['name'] ); ?>"
                                  title="<?php echo esc_attr( $icon['name'] ); ?>">
-                                <span class="acf-icomoon-icon-preview">
+                                <span class="ipiacf-icon-preview">
                                     <?php if ( ! empty( $sprite_url ) ) : ?>
                                         <svg class="icomoon-icon" aria-hidden="true">
                                             <use href="<?php echo esc_url( $sprite_url ); ?>#icon-<?php echo esc_attr( $icon['name'] ); ?>"></use>
@@ -655,21 +655,21 @@ class ACF_IcoMoon_Admin {
                                         <span class="<?php echo esc_attr( $icon['class'] ?? 'icon-' . $icon['name'] ); ?>"></span>
                                     <?php endif; ?>
                                 </span>
-                                <span class="acf-icomoon-icon-name">
+                                <span class="ipiacf-icon-name">
                                     <?php echo esc_html( $icon['name'] ); ?>
                                 </span>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <p class="acf-icomoon-no-results" id="acf-icomoon-no-results" style="display: none;">
+                    <p class="ipiacf-no-results" id="ipiacf-no-results" style="display: none;">
                         <?php esc_html_e( 'No icons found matching your search.', 'icon-picker-icomoon-for-acf' ); ?>
                     </p>
                 </div>
             <?php endif; ?>
 
             <!-- Usage Instructions -->
-            <div class="acf-icomoon-card">
+            <div class="ipiacf-card">
                 <h2><?php esc_html_e( 'Usage Instructions', 'icon-picker-icomoon-for-acf' ); ?></h2>
                 
                 <h3><?php esc_html_e( 'In ACF Fields', 'icon-picker-icomoon-for-acf' ); ?></h3>
@@ -678,10 +678,10 @@ class ACF_IcoMoon_Admin {
                 <h3><?php esc_html_e( 'In Theme Templates', 'icon-picker-icomoon-for-acf' ); ?></h3>
                 <pre><code>&lt;?php 
 // Output an icon by name
-acf_icomoon_icon( 'home' );
+ipiacf_icon( 'home' );
 
 // Get icon HTML as string
-$icon = acf_icomoon_get_icon( 'home', [
+$icon = ipiacf_get_icon( 'home', [
     'class' => 'my-custom-class',
     'width' => '24',
     'height' => '24'
@@ -690,7 +690,7 @@ $icon = acf_icomoon_get_icon( 'home', [
 // Using with ACF
 $icon_name = get_field( 'my_icon_field' );
 if ( $icon_name ) {
-    acf_icomoon_icon( $icon_name );
+    ipiacf_icon( $icon_name );
 }
 ?&gt;</code></pre>
             </div>
@@ -698,4 +698,3 @@ if ( $icon_name ) {
         <?php
     }
 }
-

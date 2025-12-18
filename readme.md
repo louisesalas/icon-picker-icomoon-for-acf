@@ -1,6 +1,6 @@
 === Icon Picker using IcoMoon for ACF ===
-Contributors: Louise Salas
-Tags: acf, icomoon, icons, svg, advanced custom fields, icon picker
+Contributors: louisesalas
+Tags: acf, icomoon, icons, svg, icon picker
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -34,15 +34,15 @@ Icon Picker using IcoMoon for ACF allows you to use your custom IcoMoon icon set
 
 ```php
 // Output an icon
-acf_icomoon_icon( 'home' );
+ipiacf_icon( 'home' );
 
 // Get icon as string
-$icon = acf_icomoon_get_icon( 'home', ['class' => 'my-icon'] );
+$icon = ipiacf_get_icon( 'home', ['class' => 'my-icon'] );
 
 // Using with ACF
 $icon_name = get_field( 'my_icon_field' );
 if ( $icon_name ) {
-    acf_icomoon_icon( $icon_name );
+    ipiacf_icon( $icon_name );
 }
 ```
 
@@ -51,6 +51,7 @@ if ( $icon_name ) {
 = 1.0.3 =
 * Renamed plugin to "Icon Picker using IcoMoon for ACF" for trademark compliance
 * Updated text domain to "icon-picker-icomoon-for-acf"
+* Updated all prefixes to use unique "ipiacf" prefix to prevent conflicts
 
 = 1.0.1 =
 * Security: Added `wp_unslash()` for proper nonce verification
@@ -65,4 +66,3 @@ if ( $icon_name ) {
 
 = 1.0.0 =
 * Initial release
-

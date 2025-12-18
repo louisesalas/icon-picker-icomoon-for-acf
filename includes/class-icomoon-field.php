@@ -4,7 +4,7 @@
  *
  * Custom ACF field type for selecting IcoMoon icons.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 declare(strict_types=1);
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class ACF_IcoMoon_Field
+ * Class IPIACF_Field
  *
  * Registers and handles the IcoMoon Icon Picker field type for ACF.
  */
-class ACF_IcoMoon_Field extends acf_field {
+class IPIACF_Field extends acf_field {
 
     /**
      * Constructor
@@ -85,8 +85,8 @@ class ACF_IcoMoon_Field extends acf_field {
      * @return void
      */
     public function render_field( $field ): void {
-        $icons      = get_option( 'acf_icomoon_icons', array() );
-        $sprite_url = get_option( 'acf_icomoon_sprite_url', '' );
+        $icons      = get_option( 'ipiacf_icons', array() );
+        $sprite_url = get_option( 'ipiacf_sprite_url', '' );
         $value      = $field['value'];
         $multiple   = ! empty( $field['multiple'] );
         
@@ -97,7 +97,7 @@ class ACF_IcoMoon_Field extends acf_field {
 
         // Wrap the field
         ?>
-        <div class="acf-icomoon-field-wrap" 
+        <div class="ipiacf-field-wrap" 
              data-multiple="<?php echo $multiple ? '1' : '0'; ?>"
              data-sprite-url="<?php echo esc_url( $sprite_url ); ?>">
             
@@ -111,36 +111,36 @@ class ACF_IcoMoon_Field extends acf_field {
                         <input type="hidden" 
                                name="<?php echo esc_attr( $field['name'] ); ?>[]" 
                                value="<?php echo esc_attr( $v ); ?>"
-                               class="acf-icomoon-value">
+                               class="ipiacf-value">
                     <?php endforeach; ?>
                 <?php endif; ?>
             <?php else : ?>
                 <input type="hidden" 
                        name="<?php echo esc_attr( $field['name'] ); ?>" 
                        value="<?php echo esc_attr( $value ); ?>"
-                       class="acf-icomoon-value">
+                       class="ipiacf-value">
             <?php endif; ?>
 
             <!-- Selected Icons Preview -->
-            <div class="acf-icomoon-selected">
-                <div class="acf-icomoon-selected-icons">
+            <div class="ipiacf-selected">
+                <div class="ipiacf-selected-icons">
                     <?php 
                     $selected_icons = $multiple ? (array) $value : ( $value ? array( $value ) : array() );
                     foreach ( $selected_icons as $icon_name ) :
                         if ( empty( $icon_name ) ) continue;
                     ?>
-                        <span class="acf-icomoon-selected-item" data-icon="<?php echo esc_attr( $icon_name ); ?>">
+                        <span class="ipiacf-selected-item" data-icon="<?php echo esc_attr( $icon_name ); ?>">
                             <?php if ( ! empty( $sprite_url ) ) : ?>
                                 <svg class="icomoon-icon" aria-hidden="true">
                                     <use href="<?php echo esc_url( $sprite_url ); ?>#icon-<?php echo esc_attr( $icon_name ); ?>"></use>
                                 </svg>
                             <?php endif; ?>
-                            <span class="acf-icomoon-selected-name"><?php echo esc_html( $icon_name ); ?></span>
-                            <button type="button" class="acf-icomoon-remove" title="<?php esc_attr_e( 'Remove', 'icon-picker-icomoon-for-acf' ); ?>">&times;</button>
+                            <span class="ipiacf-selected-name"><?php echo esc_html( $icon_name ); ?></span>
+                            <button type="button" class="ipiacf-remove" title="<?php esc_attr_e( 'Remove', 'icon-picker-icomoon-for-acf' ); ?>">&times;</button>
                         </span>
                     <?php endforeach; ?>
                 </div>
-                <button type="button" class="button acf-icomoon-toggle">
+                <button type="button" class="button ipiacf-toggle">
                     <?php echo empty( $selected_icons ) || empty( $selected_icons[0] ) 
                         ? esc_html__( 'Select Icon', 'icon-picker-icomoon-for-acf' ) 
                         : esc_html__( 'Change Icon', 'icon-picker-icomoon-for-acf' ); ?>
@@ -148,13 +148,13 @@ class ACF_IcoMoon_Field extends acf_field {
             </div>
 
             <!-- Icon Picker Modal -->
-            <div class="acf-icomoon-picker" style="display: none;">
+            <div class="ipiacf-picker" style="display: none;">
                 <?php if ( empty( $icons ) ) : ?>
-                    <div class="acf-icomoon-no-icons">
+                    <div class="ipiacf-no-icons">
                         <p><?php esc_html_e( 'No icons available.', 'icon-picker-icomoon-for-acf' ); ?></p>
                         <?php if ( current_user_can( 'manage_options' ) ) : ?>
                             <p>
-                                <a href="<?php echo esc_url( admin_url( 'options-general.php?page=acf-icomoon-icons' ) ); ?>">
+                                <a href="<?php echo esc_url( admin_url( 'options-general.php?page=ipiacf-icomoon-icons' ) ); ?>">
                                     <?php esc_html_e( 'Upload IcoMoon icons', 'icon-picker-icomoon-for-acf' ); ?>
                                 </a>
                             </p>
@@ -162,18 +162,18 @@ class ACF_IcoMoon_Field extends acf_field {
                     </div>
                 <?php else : ?>
                     <!-- Search -->
-                    <div class="acf-icomoon-picker-search">
+                    <div class="ipiacf-picker-search">
                         <input type="text" 
-                               class="acf-icomoon-search-input" 
+                               class="ipiacf-search-input" 
                                placeholder="<?php esc_attr_e( 'Search icons...', 'icon-picker-icomoon-for-acf' ); ?>">
                     </div>
 
                     <!-- Icons Grid -->
-                    <div class="acf-icomoon-picker-grid">
+                    <div class="ipiacf-picker-grid">
                         <?php foreach ( $icons as $icon ) : 
                             $is_selected = in_array( $icon['name'], $selected_icons, true );
                         ?>
-                            <div class="acf-icomoon-picker-item <?php echo $is_selected ? 'is-selected' : ''; ?>" 
+                            <div class="ipiacf-picker-item <?php echo $is_selected ? 'is-selected' : ''; ?>" 
                                  data-icon="<?php echo esc_attr( $icon['name'] ); ?>"
                                  title="<?php echo esc_attr( $icon['name'] ); ?>">
                                 <?php if ( ! empty( $sprite_url ) ) : ?>
@@ -183,23 +183,23 @@ class ACF_IcoMoon_Field extends acf_field {
                                 <?php else : ?>
                                     <span class="<?php echo esc_attr( $icon['class'] ?? 'icon-' . $icon['name'] ); ?>"></span>
                                 <?php endif; ?>
-                                <span class="acf-icomoon-picker-name"><?php echo esc_html( $icon['name'] ); ?></span>
+                                <span class="ipiacf-picker-name"><?php echo esc_html( $icon['name'] ); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <p class="acf-icomoon-picker-no-results" style="display: none;">
+                    <p class="ipiacf-picker-no-results" style="display: none;">
                         <?php esc_html_e( 'No icons found.', 'icon-picker-icomoon-for-acf' ); ?>
                     </p>
 
                     <!-- Actions -->
-                    <div class="acf-icomoon-picker-actions">
+                    <div class="ipiacf-picker-actions">
                         <?php if ( ! empty( $field['allow_null'] ) ) : ?>
-                            <button type="button" class="button acf-icomoon-clear-selection">
+                            <button type="button" class="button ipiacf-clear-selection">
                                 <?php esc_html_e( 'Clear Selection', 'icon-picker-icomoon-for-acf' ); ?>
                             </button>
                         <?php endif; ?>
-                        <button type="button" class="button button-primary acf-icomoon-close">
+                        <button type="button" class="button button-primary ipiacf-close">
                             <?php esc_html_e( 'Done', 'icon-picker-icomoon-for-acf' ); ?>
                         </button>
                     </div>
@@ -222,7 +222,7 @@ class ACF_IcoMoon_Field extends acf_field {
             return $value;
         }
 
-        $sprite_url = get_option( 'acf_icomoon_sprite_url', '' );
+        $sprite_url = get_option( 'ipiacf_sprite_url', '' );
         $multiple   = ! empty( $field['multiple'] );
         $format     = $field['return_format'] ?? 'name';
 
@@ -317,27 +317,27 @@ class ACF_IcoMoon_Field extends acf_field {
         // but we ensure they're available on all ACF pages
         
         wp_enqueue_style(
-            'acf-icomoon-admin',
-            ACF_ICOMOON_PLUGIN_URL . 'assets/css/admin.css',
+            'ipiacf-admin',
+            IPIACF_PLUGIN_URL . 'assets/css/admin.css',
             array(),
-            ACF_ICOMOON_VERSION
+            IPIACF_VERSION
         );
 
         wp_enqueue_script(
-            'acf-icomoon-admin',
-            ACF_ICOMOON_PLUGIN_URL . 'assets/js/admin.js',
+            'ipiacf-admin',
+            IPIACF_PLUGIN_URL . 'assets/js/admin.js',
             array( 'jquery', 'acf-input' ),
-            ACF_ICOMOON_VERSION,
+            IPIACF_VERSION,
             true
         );
 
         // Only localize script data once to avoid duplicate data
         if ( ! self::$scripts_localized ) {
-            wp_localize_script( 'acf-icomoon-admin', 'acfIcoMoon', array(
+            wp_localize_script( 'ipiacf-admin', 'ipiacfData', array(
                 'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-                'nonce'     => wp_create_nonce( 'acf_icomoon_nonce' ),
-                'spriteUrl' => get_option( 'acf_icomoon_sprite_url', '' ),
-                'icons'     => get_option( 'acf_icomoon_icons', array() ),
+                'nonce'     => wp_create_nonce( 'ipiacf_nonce' ),
+                'spriteUrl' => get_option( 'ipiacf_sprite_url', '' ),
+                'icons'     => get_option( 'ipiacf_icons', array() ),
                 'strings'   => array(
                     'selectIcon'   => __( 'Select Icon', 'icon-picker-icomoon-for-acf' ),
                     'changeIcon'   => __( 'Change Icon', 'icon-picker-icomoon-for-acf' ),
@@ -353,4 +353,3 @@ class ACF_IcoMoon_Field extends acf_field {
         }
     }
 }
-

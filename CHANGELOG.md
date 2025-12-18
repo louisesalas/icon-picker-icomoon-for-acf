@@ -1,9 +1,20 @@
 # Changelog
 
-All notable changes to ACF IcoMoon Integration will be documented in this file.
+All notable changes to Icon Picker using IcoMoon for ACF will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.3] - 2025-12-18
+
+### Changed
+- Renamed all prefixes to use unique "IPIACF" prefix to prevent conflicts with other plugins
+- Updated class names: `IPIACF_Integration`, `IPIACF_Parser`, `IPIACF_Sanitizer`, `IPIACF_Admin`, `IPIACF_Frontend`, `IPIACF_Field`
+- Updated function names: `ipiacf_icon()`, `ipiacf_get_icon()`, `ipiacf_has_icons()`, `ipiacf_get_icons()`
+- Updated constants: `IPIACF_VERSION`, `IPIACF_PLUGIN_DIR`, `IPIACF_PLUGIN_URL`, `IPIACF_PLUGIN_BASENAME`
+- Updated option names: `ipiacf_icons`, `ipiacf_sprite_url`, `ipiacf_sprite_path`
+- Updated all CSS classes and JavaScript identifiers to use `ipiacf-` prefix
+- Fixed deprecated `libxml_disable_entity_loader()` for PHP 8.0+ compatibility
 
 ## [1.0.2] - 2025-12-02
 
@@ -15,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced output escaping throughout codebase for XSS prevention
 
 ### Added
-- New `ACF_IcoMoon_Sanitizer` class for comprehensive SVG content sanitization
+- New `IPIACF_Sanitizer` class for comprehensive SVG content sanitization
 - Whitelist-based SVG element and attribute filtering (removes scripts, event handlers, dangerous CSS)
 - Path validation method to ensure all file operations stay within WordPress uploads directory
 - Security documentation: `SECURITY-CHANGELOG.md` and `SECURITY-FIXES-SUMMARY.md`
@@ -25,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - XML/SVG parsing now uses secure libxml options (`LIBXML_NONET`, `LIBXML_NOENT`, `LIBXML_NOCDATA`)
 - External entity loading disabled across all XML operations to prevent XXE attacks
 - All uploaded SVG files are now sanitized before storage
-- Admin class constructor now requires `ACF_IcoMoon_Sanitizer` instance
+- Admin class constructor now requires `IPIACF_Sanitizer` instance
 - Improved file path security with `realpath()` validation
 
 ### Technical Details
@@ -69,8 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Visual icon picker with search functionality
 - Multiple return formats: icon name, SVG use tag, CSS class, or full array
 - Single and multiple icon selection support
-- Helper functions: `acf_icomoon_icon()`, `acf_icomoon_get_icon()`, `acf_icomoon_has_icons()`, `acf_icomoon_get_icons()`
+- Helper functions: `ipiacf_icon()`, `ipiacf_get_icon()`, `ipiacf_has_icons()`, `ipiacf_get_icons()`
 - Admin settings page under Settings > IcoMoon Icons
 - Inline SVG sprite output for frontend rendering
 - ACF dependency check with admin notice
-

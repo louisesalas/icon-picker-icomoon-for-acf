@@ -1,18 +1,18 @@
 /**
- * ACF IcoMoon Admin JavaScript
+ * IPIACF Admin JavaScript
  *
  * Handles the admin UI interactions for icon selection and management.
  *
- * @package ACF_IcoMoon_Integration
+ * @package IPIACF
  */
 
 (function($) {
     'use strict';
 
     /**
-     * IcoMoon Admin Handler
+     * IPIACF Admin Handler
      */
-    var ACFIcoMoon = {
+    var IPIACF = {
 
         /**
          * Initialize
@@ -27,13 +27,13 @@
          */
         bindEvents: function() {
             // Settings page search
-            $(document).on('input', '#acf-icomoon-search', this.handleSearch.bind(this));
+            $(document).on('input', '#ipiacf-search', this.handleSearch.bind(this));
             
             // Clear icons button
-            $(document).on('click', '#acf-icomoon-clear', this.handleClearIcons.bind(this));
+            $(document).on('click', '#ipiacf-clear', this.handleClearIcons.bind(this));
             
             // Icon item click on settings page
-            $(document).on('click', '.acf-icomoon-icon-item', this.handleIconClick.bind(this));
+            $(document).on('click', '.ipiacf-icon-item', this.handleIconClick.bind(this));
         },
 
         /**
@@ -55,39 +55,39 @@
             var $container = $el || $(document);
 
             // Toggle picker
-            $container.find('.acf-icomoon-toggle').off('click').on('click', function(e) {
+            $container.find('.ipiacf-toggle').off('click').on('click', function(e) {
                 e.preventDefault();
-                var $wrap = $(this).closest('.acf-icomoon-field-wrap');
-                $wrap.find('.acf-icomoon-picker').slideToggle(200);
+                var $wrap = $(this).closest('.ipiacf-field-wrap');
+                $wrap.find('.ipiacf-picker').slideToggle(200);
             });
 
             // Search in picker
-            $container.find('.acf-icomoon-search-input').off('input').on('input', function() {
+            $container.find('.ipiacf-search-input').off('input').on('input', function() {
                 self.filterPickerIcons($(this));
             });
 
             // Select icon
-            $container.find('.acf-icomoon-picker-item').off('click').on('click', function() {
+            $container.find('.ipiacf-picker-item').off('click').on('click', function() {
                 self.selectIcon($(this));
             });
 
             // Remove selected icon
-            $container.find('.acf-icomoon-remove').off('click').on('click', function(e) {
+            $container.find('.ipiacf-remove').off('click').on('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.removeIcon($(this));
             });
 
             // Clear selection
-            $container.find('.acf-icomoon-clear-selection').off('click').on('click', function(e) {
+            $container.find('.ipiacf-clear-selection').off('click').on('click', function(e) {
                 e.preventDefault();
                 self.clearSelection($(this));
             });
 
             // Close picker
-            $container.find('.acf-icomoon-close').off('click').on('click', function(e) {
+            $container.find('.ipiacf-close').off('click').on('click', function(e) {
                 e.preventDefault();
-                $(this).closest('.acf-icomoon-picker').slideUp(200);
+                $(this).closest('.ipiacf-picker').slideUp(200);
             });
         },
 
@@ -96,9 +96,9 @@
          */
         handleSearch: function(e) {
             var query = $(e.target).val().toLowerCase().trim();
-            var $grid = $('#acf-icomoon-icons-grid');
-            var $items = $grid.find('.acf-icomoon-icon-item');
-            var $noResults = $('#acf-icomoon-no-results');
+            var $grid = $('#ipiacf-icons-grid');
+            var $items = $grid.find('.ipiacf-icon-item');
+            var $noResults = $('#ipiacf-no-results');
             var visibleCount = 0;
 
             $items.each(function() {
@@ -115,7 +115,7 @@
             $noResults.toggle(visibleCount === 0);
             
             // Update count
-            $('.acf-icomoon-count').text(visibleCount + ' icons');
+            $('.ipiacf-count').text(visibleCount + ' icons');
         },
 
         /**
@@ -124,30 +124,30 @@
         handleClearIcons: function(e) {
             e.preventDefault();
 
-            if (!confirm(acfIcoMoon.strings.confirmClear)) {
+            if (!confirm(ipiacfData.strings.confirmClear)) {
                 return;
             }
 
             var $button = $(e.target);
-            $button.prop('disabled', true).text(acfIcoMoon.strings.clearing);
+            $button.prop('disabled', true).text(ipiacfData.strings.clearing);
 
             $.ajax({
-                url: acfIcoMoon.ajaxUrl,
+                url: ipiacfData.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'acf_icomoon_clear_icons',
-                    nonce: acfIcoMoon.nonce
+                    action: 'ipiacf_clear_icons',
+                    nonce: ipiacfData.nonce
                 },
                 success: function(response) {
                     if (response.success) {
                         location.reload();
                     } else {
-                        alert(response.data.message || acfIcoMoon.strings.error);
+                        alert(response.data.message || ipiacfData.strings.error);
                         $button.prop('disabled', false).text('Clear All Icons');
                     }
                 },
                 error: function() {
-                    alert(acfIcoMoon.strings.error);
+                    alert(ipiacfData.strings.error);
                     $button.prop('disabled', false).text('Clear All Icons');
                 }
             });
@@ -164,7 +164,7 @@
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(name).then(function() {
                     // Show feedback
-                    var $name = $item.find('.acf-icomoon-icon-name');
+                    var $name = $item.find('.ipiacf-icon-name');
                     var originalText = $name.text();
                     $name.text('Copied!');
                     
@@ -180,9 +180,9 @@
          */
         filterPickerIcons: function($input) {
             var query = $input.val().toLowerCase().trim();
-            var $wrap = $input.closest('.acf-icomoon-picker');
-            var $items = $wrap.find('.acf-icomoon-picker-item');
-            var $noResults = $wrap.find('.acf-icomoon-picker-no-results');
+            var $wrap = $input.closest('.ipiacf-picker');
+            var $items = $wrap.find('.ipiacf-picker-item');
+            var $noResults = $wrap.find('.ipiacf-picker-no-results');
             var visibleCount = 0;
 
             $items.each(function() {
@@ -203,21 +203,21 @@
          * Select an icon
          */
         selectIcon: function($item) {
-            var $wrap = $item.closest('.acf-icomoon-field-wrap');
+            var $wrap = $item.closest('.ipiacf-field-wrap');
             var iconName = $item.data('icon');
             var isMultiple = $wrap.data('multiple') === 1;
             var spriteUrl = $wrap.data('sprite-url');
 
             if (!isMultiple) {
                 // Single selection mode
-                $wrap.find('.acf-icomoon-picker-item').removeClass('is-selected');
+                $wrap.find('.ipiacf-picker-item').removeClass('is-selected');
                 $item.addClass('is-selected');
 
                 // Update hidden input
-                $wrap.find('.acf-icomoon-value').val(iconName);
+                $wrap.find('.ipiacf-value').val(iconName);
 
                 // Update preview
-                var $selectedIcons = $wrap.find('.acf-icomoon-selected-icons');
+                var $selectedIcons = $wrap.find('.ipiacf-selected-icons');
                 $selectedIcons.empty();
                 
                 if (iconName) {
@@ -225,16 +225,16 @@
                 }
 
                 // Update button text
-                $wrap.find('.acf-icomoon-toggle').text(
-                    iconName ? acfIcoMoon.strings.changeIcon : acfIcoMoon.strings.selectIcon
+                $wrap.find('.ipiacf-toggle').text(
+                    iconName ? ipiacfData.strings.changeIcon : ipiacfData.strings.selectIcon
                 );
 
             } else {
                 // Multiple selection mode
                 $item.toggleClass('is-selected');
                 
-                var $selectedIcons = $wrap.find('.acf-icomoon-selected-icons');
-                var $existingInputs = $wrap.find('.acf-icomoon-value');
+                var $selectedIcons = $wrap.find('.ipiacf-selected-icons');
+                var $existingInputs = $wrap.find('.ipiacf-value');
                 
                 if ($item.hasClass('is-selected')) {
                     // Add new hidden input
@@ -244,14 +244,14 @@
                             .attr('type', 'hidden')
                             .attr('name', inputName + '[]')
                             .val(iconName)
-                            .addClass('acf-icomoon-value')
+                            .addClass('ipiacf-value')
                     );
                     
                     // Add preview
                     $selectedIcons.append(this.createSelectedItem(iconName, spriteUrl));
                 } else {
                     // Remove hidden input and preview
-                    $wrap.find('.acf-icomoon-value[value="' + iconName + '"]').remove();
+                    $wrap.find('.ipiacf-value[value="' + iconName + '"]').remove();
                     $selectedIcons.find('[data-icon="' + iconName + '"]').remove();
                 }
             }
@@ -264,7 +264,7 @@
          * Create selected item HTML
          */
         createSelectedItem: function(iconName, spriteUrl) {
-            var $item = $('<span class="acf-icomoon-selected-item" data-icon="' + iconName + '">');
+            var $item = $('<span class="ipiacf-selected-item" data-icon="' + iconName + '">');
             
             if (spriteUrl) {
                 $item.append(
@@ -274,12 +274,12 @@
                 );
             }
             
-            $item.append('<span class="acf-icomoon-selected-name">' + iconName + '</span>');
-            $item.append('<button type="button" class="acf-icomoon-remove" title="Remove">&times;</button>');
+            $item.append('<span class="ipiacf-selected-name">' + iconName + '</span>');
+            $item.append('<button type="button" class="ipiacf-remove" title="Remove">&times;</button>');
             
             // Bind remove event
             var self = this;
-            $item.find('.acf-icomoon-remove').on('click', function(e) {
+            $item.find('.ipiacf-remove').on('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 self.removeIcon($(this));
@@ -292,23 +292,23 @@
          * Remove an icon
          */
         removeIcon: function($button) {
-            var $item = $button.closest('.acf-icomoon-selected-item');
-            var $wrap = $button.closest('.acf-icomoon-field-wrap');
+            var $item = $button.closest('.ipiacf-selected-item');
+            var $wrap = $button.closest('.ipiacf-field-wrap');
             var iconName = $item.data('icon');
             var isMultiple = $wrap.data('multiple') === 1;
 
             // Remove from picker selection
-            $wrap.find('.acf-icomoon-picker-item[data-icon="' + iconName + '"]').removeClass('is-selected');
+            $wrap.find('.ipiacf-picker-item[data-icon="' + iconName + '"]').removeClass('is-selected');
 
             if (isMultiple) {
                 // Remove specific hidden input
-                $wrap.find('.acf-icomoon-value[value="' + iconName + '"]').remove();
+                $wrap.find('.ipiacf-value[value="' + iconName + '"]').remove();
             } else {
                 // Clear hidden input
-                $wrap.find('.acf-icomoon-value').val('');
+                $wrap.find('.ipiacf-value').val('');
                 
                 // Update button text
-                $wrap.find('.acf-icomoon-toggle').text(acfIcoMoon.strings.selectIcon);
+                $wrap.find('.ipiacf-toggle').text(ipiacfData.strings.selectIcon);
             }
 
             // Remove preview item
@@ -322,24 +322,24 @@
          * Clear all selections
          */
         clearSelection: function($button) {
-            var $wrap = $button.closest('.acf-icomoon-field-wrap');
+            var $wrap = $button.closest('.ipiacf-field-wrap');
             var isMultiple = $wrap.data('multiple') === 1;
 
             // Clear picker selections
-            $wrap.find('.acf-icomoon-picker-item').removeClass('is-selected');
+            $wrap.find('.ipiacf-picker-item').removeClass('is-selected');
 
             // Clear hidden inputs
             if (isMultiple) {
-                $wrap.find('.acf-icomoon-value').remove();
+                $wrap.find('.ipiacf-value').remove();
             } else {
-                $wrap.find('.acf-icomoon-value').val('');
+                $wrap.find('.ipiacf-value').val('');
             }
 
             // Clear preview
-            $wrap.find('.acf-icomoon-selected-icons').empty();
+            $wrap.find('.ipiacf-selected-icons').empty();
 
             // Update button text
-            $wrap.find('.acf-icomoon-toggle').text(acfIcoMoon.strings.selectIcon);
+            $wrap.find('.ipiacf-toggle').text(ipiacfData.strings.selectIcon);
 
             // Trigger ACF change
             this.triggerACFChange($wrap);
@@ -361,8 +361,7 @@
 
     // Initialize on document ready
     $(document).ready(function() {
-        ACFIcoMoon.init();
+        IPIACF.init();
     });
 
 })(jQuery);
-
